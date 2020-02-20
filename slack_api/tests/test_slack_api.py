@@ -2,12 +2,12 @@ import unittest
 import json
 from unittest import mock
 from requests import Response
-from slack_api import SlackApi
+from slack_api.api import SlackApi
 
 
 class SlackApiTestCase(unittest.TestCase):
     def setUp(self):
-	 self.responce_dict = {self.fail_responce, self.delete_responce, self.history_responce}
+        self.responce_dict = {self.fail_responce, self.delete_responce, self.history_responce}
         self.fail_responce = {
             "ok": False,
             "error": "channel_not_found"
@@ -41,23 +41,33 @@ class SlackApiTestCase(unittest.TestCase):
         }
         with open('config.json') as config_file:
             self.api = SlackApi(json.load(config_file))
-    
-    def set_mock_response(testClassName, mock):
+
+    def set_mock_response(self, testClassName, mock):
         # HTTPレスポンスのMockを作成する。
         res = Response()
         res.headers = {'Content-Type': 'application/json'}
         res.status_code = 200
         res._content = self.responce_dict[testClassName].encode('utf-8')
         mock.return_value = res
-        
+
 
 class DeleteTestCase(SlackApiTestCase):
 
     @mock.patch("requests.post")
     def test_success_delete_message(self, mock_post):
         '''削除APIを叩いて成功する'''
-	set_mock_response('delete')
-	api = SlackApi()
-	result = api.delete()
-	self .assertEqual
-	
+        self.set_mock_response('delete')
+        api = SlackApi('hoge-token', 'C024BE91L')
+        result = api.delete('1401383885.000061')
+        self.assertEqual(result, self.delete_responce)
+
+
+    @mock.patch("requests.post")
+    def test_success_delete_message(self, mock_post):
+        '''チャンネルIDを指定して削除APIを叩いて成功する'''
+        channel_id = 'A024BE91L'
+        self.delete_responce['channel']
+        self.set_mock_response('delete')
+        api = SlackApi('hoge-token', 'C024BE91L')
+        result = api.delete('1401383885.000061', channel_id)
+        self.assertEqual(result, self.delete_responce)

@@ -131,3 +131,6 @@ dmypy.json
 
 # vscode local hisyoty addon
 .history
+
+# project private
+config.json
