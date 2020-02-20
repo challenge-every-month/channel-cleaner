@@ -3,7 +3,7 @@ from typing import Dict, List
 from exception import SlackApiError
 
 
-class slackApi():
+class SlackApi():
 
     def __init__(self, api_tokens: Dict[str, str]):
         """
