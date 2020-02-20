@@ -1,0 +1,2 @@
+# channel-cleaner
+slackの指定チャンネルの発言を自動削除するPythonスクリプト
