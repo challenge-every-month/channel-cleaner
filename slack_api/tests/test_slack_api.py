@@ -1,6 +1,7 @@
 import unittest
 import json
 from unittest import mock
+from requests import Response
 from slack_api import SlackApi
 
 
@@ -39,7 +40,16 @@ class SlackApiTestCase(unittest.TestCase):
         }
         with open('config.json') as config_file:
             self.api = SlackApi(json.load(config_file))
-
+    
 
 class DeleteTestCase(SlackApiTestCase):
-    def 
+
+    @mock.patch("requests.post")
+    def test_success_delete_message(self, mock_post):
+        '''削除APIを叩いて成功する'''
+        # HTTPレスポンスのMockを作成する。
+        res = Response()
+        res.headers = {'Content-Type': 'application/json'}
+        res.status_code = 200
+        res._content = f'{self.delete_responce}'.encode('utf-8')
+        mock_post.return_value = res
