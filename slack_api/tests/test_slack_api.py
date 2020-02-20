@@ -7,6 +7,7 @@ from slack_api import SlackApi
 
 class SlackApiTestCase(unittest.TestCase):
     def setUp(self):
+	 self.responce_dict = {self.fail_responce, self.delete_responce, self.history_responce}
         self.fail_responce = {
             "ok": False,
             "error": "channel_not_found"
@@ -41,15 +42,22 @@ class SlackApiTestCase(unittest.TestCase):
         with open('config.json') as config_file:
             self.api = SlackApi(json.load(config_file))
     
+    def set_mock_response(testClassName, mock):
+        # HTTPレスポンスのMockを作成する。
+        res = Response()
+        res.headers = {'Content-Type': 'application/json'}
+        res.status_code = 200
+        res._content = self.responce_dict[testClassName].encode('utf-8')
+        mock.return_value = res
+        
 
 class DeleteTestCase(SlackApiTestCase):
 
     @mock.patch("requests.post")
     def test_success_delete_message(self, mock_post):
         '''削除APIを叩いて成功する'''
-        # HTTPレスポンスのMockを作成する。
-        res = Response()
-        res.headers = {'Content-Type': 'application/json'}
-        res.status_code = 200
-        res._content = f'{self.delete_responce}'.encode('utf-8')
-        mock_post.return_value = res
+	set_mock_response('delete')
+	api = SlackApi()
+	result = api.delete()
+	self .assertEqual
+	
