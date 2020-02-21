@@ -1,6 +1,6 @@
 import requests
 from typing import Dict, List
-from exception import SlackApiError
+from .exception import SlackApiError
 
 
 class SlackApi():
@@ -34,7 +34,7 @@ class SlackApi():
                   'channel': channel_id if len(channel_id) > 0 else self.channel_id
                   }
 
-        result = self._request_api(url, params, "POST").get('ok')
+        result = self._request_api(url, params, "POST")
 
         return result
 
@@ -53,7 +53,7 @@ class SlackApi():
                   'channel': channel_id if len(channel_id) > 0 else self.channel_id
                   }
 
-        result = self._request_api(url, params, "POST").get('ok')
+        result = self._request_api(url, params, "POST")
 
         return result
 
