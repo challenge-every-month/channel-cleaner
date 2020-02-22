@@ -57,7 +57,7 @@ class SlackApi():
 
         return result
 
-    def history(self, channel_id: str = "", limit: int = 1000) -> List[Dict[str, str]]:
+    def history(self, limit: int = 1000, channel_id: str = "") -> List[Dict[str, str]]:
         """
         特定のチャンネルの発言を取得する
 
@@ -79,7 +79,7 @@ class SlackApi():
         header = {'Content-Type', 'application/x-www-form-urlencoded'}
 
         if method.lower() == "get":
-            res = requests.get(url, header=header, data=data)
+            res = requests.get(url, data=data)
         elif method.lower() == "post":
             res = requests.post(url, header=header, data=data)
 
