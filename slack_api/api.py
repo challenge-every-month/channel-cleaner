@@ -71,9 +71,13 @@ class SlackApi():
                   'channel': channel_id if len(channel_id) > 0 else self.channel_id,
                   'count': limit,
                   }
-        self.history_data = self._request_api(url, params, "GET")
-
-        return self.history_data['messages']
+        res  = self._request_api(url, params, "GET")
+        messages = res['messages']
+        while res["response_metadata"]["next_cursor"]:
+            params['cursor'] = res["response_metadata"]["next_cursor"]
+            res  = self._request_api(url, params, "GET")
+            messages.extend([message for message in res['messages']])
+        return messages
 
     def _request_api(self, url: str, data: Dict, method: str = "GET"):
         header = {'Content-Type', 'application/x-www-form-urlencoded'}

@@ -5,10 +5,10 @@ import os.path
 from unittest import mock
 from requests import Response
 from slack_api import SlackApi, exception
-
-
+import types
 class SlackApiTestCase(unittest.TestCase):
     def setUp(self):
+        self.maxDiff = None
         self.time_stamp = "1401383885.000061"
         with open(os.path.join(os.getcwd(), 'config.json')) as config_file:
             config_json = json.load(config_file)
@@ -50,7 +50,35 @@ class SlackApiTestCase(unittest.TestCase):
                 "next_cursor": "bmV4dF90czoxNTEyMDg1ODYxMDAwNTQz"
             }
         }
-        self.response_dict = {"fail": self.fail_response, "delete": self.delete_response, "history": self.history_response}
+        self.history_response2 = {
+            "ok": True,
+            "messages": [
+                {
+                    "type": "message",
+                    "user": "U012AB3CDE",
+                    "text": "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system",
+                    "ts": self.time_stamp
+                },
+                {
+                    "type": "message",
+                    "user": "U061F7AUR",
+                    "text": "that they cannot foresee",
+                    "ts": self.time_stamp
+                }
+            ],
+            "has_more": False,
+            "pin_count": 0,
+            "response_metadata": {
+                "next_cursor": ""
+            }
+        }
+
+        def set_history_response():
+            yield self.history_response
+            yield self.history_response2
+        history_responses = set_history_response()
+
+        self.response_dict = {"fail": self.fail_response, "delete": self.delete_response, "history": history_responses}
 
     def set_mock_response(self, testClassName, mock):
         def set_http_responce(url, data, header={}):
@@ -58,7 +86,9 @@ class SlackApiTestCase(unittest.TestCase):
             res = Response()
             res.headers = {'Content-Type': 'application/json'}
             res.status_code = 200
-            res._content = json.dumps(self.response_dict[testClassName]).encode('utf-8')
+            res_dict = self.response_dict[testClassName]
+            content = res_dict if not isinstance(res_dict, types.GeneratorType) else next(res_dict)
+            res._content = json.dumps(content).encode('utf-8')
             return res
         mock.side_effect = set_http_responce
 
@@ -92,7 +122,32 @@ class HistoryTestCase(SlackApiTestCase):
 
     @mock.patch("requests.get")
     def test_SlackAPIを呼び出せる(self, mock_post):
-        expect_responce = self.history_response['messages']
+        expect_responce = [
+            {
+                "type": "message",
+                "user": "U012AB3CDE",
+                "text": "I find you punny and would like to smell your nose letter",
+                "ts": self.time_stamp
+            },
+            {
+                "type": "message",
+                "user": "U061F7AUR",
+                "text": "What, you want to smell my shoes better?",
+                "ts": self.time_stamp
+            },
+            {
+                "type": "message",
+                "user": "U012AB3CDE",
+                "text": "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system",
+                "ts": self.time_stamp
+            },
+            {
+                "type": "message",
+                "user": "U061F7AUR",
+                "text": "that they cannot foresee",
+                "ts": self.time_stamp
+            }
+        ]
         self.set_mock_response(self.testClassName, mock_post)
         result = self.api.history()
         self.assertEqual(result, expect_responce)
@@ -102,7 +157,7 @@ class HistoryTestCase(SlackApiTestCase):
         channel_id = 'A024BE91L'
         self.history_response['channel'] = channel_id
         self.params['channel'] = channel_id
-        mock_api.return_value = self.history_response
+        mock_api.return_value = self.history_response2
         self.api.history(channel_id=channel_id)
         mock_api.assert_called_with(self.url, self.params, "GET")
 
@@ -110,7 +165,7 @@ class HistoryTestCase(SlackApiTestCase):
     def test_指定した上限数でAPIを呼び出せる(self, mock_api):
         limit = 999
         self.params['count'] = limit
-        mock_api.return_value = self.history_response
+        mock_api.return_value = self.history_response2
         self.api.history(limit)
         mock_api.assert_called_with(self.url, self.params, "GET")
 
