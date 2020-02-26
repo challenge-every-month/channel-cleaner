@@ -67,7 +67,7 @@ class SlackApi():
             limit: 取得上限を設定する。
         '''
 
-        end_point = 'channels.history'
+        end_point = 'conversations.history'
         params = {'token': self.token,
                   'channel': channel_id if len(channel_id) > 0 else self.channel_id,
                   'count': limit,
@@ -82,17 +82,17 @@ class SlackApi():
 
     def _request_api(self, end_point: str, data: Dict, method: str = 'GET'):
         url = urljoin('https://slack.com/api/', end_point)
-        header = {'Content-Type', 'application/x-www-form-urlencoded'}
+        header = {'Content-Type': 'application/x-www-form-urlencoded'}
         if method.lower() == 'get':
-            res = requests.get(url, data=data)
+            res = requests.get(url, headers=header, data=data)
         elif method.lower() == 'post':
-        res = requests.post(url, header=header, data=data)
+            res = requests.post(url, headers=header, data=data)
 
         res.raise_for_status()
         res_json = res.json()
 
         # Slack APIの実行に失敗した時、例外を返す
         if not res_json.get('ok'):
-        raise SlackApiError(res_json.get('error'))
+            raise SlackApiError(res_json.get('error'))
 
         return res_json
