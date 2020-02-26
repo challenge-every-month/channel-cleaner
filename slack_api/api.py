@@ -38,7 +38,7 @@ class SlackApi():
 
         return result
 
-    def delete(self, time_stamp: int, channel_id: str = ""):
+    def delete(self, time_stamp: float, channel_id: str = ""):
         """
         特定のチャンネルの発言を削除する
         channel_idを省略した場合、__init__で渡した channel_idを利用する
