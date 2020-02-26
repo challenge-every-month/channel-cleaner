@@ -118,7 +118,7 @@ class DeleteTestCase(SlackApiTestCase):
 
 class HistoryTestCase(SlackApiTestCase):
     testClassName = "history"
-    url = "https://slack.com/api/channels.history"
+    url = "channels.history"
 
     @mock.patch("requests.get")
     def test_SlackAPIを呼び出せる(self, mock_post):
