@@ -3,12 +3,14 @@ import time
 from datetime import datetime
 from slack_api import SlackApi
 
-TIMELIMIT = 43200
+with open('config.json') as config_file:
+    config_json = json.load(config_file)
+    api = SlackApi(config_json)
+    TIMELIMIT = float(config_json.get('time_limit', 12)) * 3600
 
 
 def clean():
-    with open('config.json') as config_file:
-        api = SlackApi(json.load(config_file))
+
     history = api.history()
 
     for m in history:
