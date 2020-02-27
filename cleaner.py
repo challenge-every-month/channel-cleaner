@@ -18,7 +18,7 @@ def clean():
     pprint(history)
     for m in history:
         delta = datetime.now()  - datetime.fromtimestamp(float(m['ts']))
-        if delta.seconds >= TIMELIMIT:
+        is_remove = (delta.seconds + (delta.days * 24 * 3600)) >= TIMELIMIT
             print('削除対象のメッセージが見つかりました。')
             pprint(m)
             api.delete(m['ts'])
