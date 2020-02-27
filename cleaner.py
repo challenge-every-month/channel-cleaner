@@ -1,5 +1,6 @@
 import json
 import time
+from pprint import pprint
 from datetime import datetime
 from slack_api import SlackApi
 
@@ -12,11 +13,15 @@ with open('config.json') as config_file:
 def clean():
 
     history = api.history()
-
+    history_len = len(history)
+    print(f'{history_len}件のメッセージを取得しました')
+    pprint(history)
     for m in history:
         delta = datetime.now()  - datetime.fromtimestamp(float(m['ts']))
         if delta.seconds >= TIMELIMIT:
-            api.delete(float(m['ts']))
+            print('削除対象のメッセージが見つかりました。')
+            pprint(m)
+            api.delete(m['ts'])
             # 連続で送りすぎるとエラーになるので1秒待機
             time.sleep(1)
 
