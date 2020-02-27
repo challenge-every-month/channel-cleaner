@@ -75,7 +75,7 @@ class SlackApi():
                   }
         res  = self._request_api(end_point, params, 'GET')
         messages = res['messages']
-        while res['response_metadata']['next_cursor']:
+        while res['has_more']:
             params['cursor'] = res['response_metadata']['next_cursor']
             res  = self._request_api(end_point, params, 'GET')
             messages.extend([message for message in res['messages']])
