@@ -84,7 +84,7 @@ class SlackApi():
         url = urljoin('https://slack.com/api/', end_point)
         header = {'Content-Type': 'application/x-www-form-urlencoded'}
         if method.lower() == 'get':
-            res = requests.get(url, headers=header, data=data)
+            res = requests.get(url, headers=header, params=data)
         elif method.lower() == 'post':
             res = requests.post(url, headers=header, data=data)
 
