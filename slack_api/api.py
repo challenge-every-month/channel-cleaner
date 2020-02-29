@@ -1,4 +1,5 @@
 import requests
+import os
 from typing import Dict, List
 from .exception import SlackApiError
 from urllib.parse import urljoin
@@ -6,7 +7,7 @@ from urllib.parse import urljoin
 
 class SlackApi():
 
-    def __init__(self, api_tokens: Dict[str, str]):
+    def __init__(self):
         '''
         tokenとchannelのIDを受け取る
 
@@ -18,8 +19,8 @@ class SlackApi():
                 channel_id:[channel_id]
             }
         '''
-        self.token = api_tokens.get('token')
-        self.channel_id = api_tokens.get('channel_id')
+        self.token = os.environ.get('slack_token')
+        self.channel_id = os.environ.get('slack_channel_id')
 
     def say(self, message: str, channel_id: str = ''):
         '''

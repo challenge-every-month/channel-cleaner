@@ -133,4 +133,4 @@ dmypy.json
 .history
 
 # project private
-config.json
+config*.json

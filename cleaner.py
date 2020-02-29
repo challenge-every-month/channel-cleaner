@@ -1,6 +1,7 @@
 import json
 import time
 import traceback
+import os
 from datetime import datetime
 from pprint import pprint
 
@@ -9,7 +10,9 @@ from slack_api.exception import SlackApiError
 
 with open('config.json') as config_file:
     config_json = json.load(config_file)
-    api = SlackApi(config_json)
+    os.environ['slack_token'] = config_json['token']
+    os.environ['slack_channel_id'] = config_json['channel_id']
+    api = SlackApi()
     TIMELIMIT = float(config_json.get('time_limit', 12)) * 3600
 
 
@@ -34,9 +37,10 @@ def clean():
                 removed = removed + 1
                 # 連続で送りすぎるとエラーになるので1秒待機
                 time.sleep(1)
-            except SlackApiError as e:
+            except SlackApiError:
                 print(traceback.format_exc())
     print(f'{count}件中{removed}件のメッセージを削除しました')
+
 
 if __name__ == "__main__":
     clean()
