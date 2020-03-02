@@ -43,8 +43,8 @@ class cleanerTestCase(unittest.TestCase):
                 "ts": str(self.now_time.timestamp())
             }
         ]
-        cleaner.clean()
-        mock_delete.assert_called_once_with(self.time_limit_exceeded.timestamp())
+        cleaner.main()
+        mock_delete.assert_called_once_with(str(self.time_limit_exceeded.timestamp()))
 
     @mock.patch("slack_api.SlackApi.history")
     @mock.patch("slack_api.SlackApi.delete")
@@ -76,7 +76,7 @@ class cleanerTestCase(unittest.TestCase):
                 "ts": self.now_time.timestamp()
             }
         ]
-        cleaner.clean()
+        cleaner.main()
         mock_delete.assert_any_call(self.time_limit_exceeded.timestamp())
         mock_delete.assert_any_call(self.time_limit_exceeded_2.timestamp())
 
@@ -110,5 +110,5 @@ class cleanerTestCase(unittest.TestCase):
                 "ts": self.now_time.timestamp()
             }
         ]
-        cleaner.clean()
+        cleaner.main()
         mock_delete.assert_not_called()

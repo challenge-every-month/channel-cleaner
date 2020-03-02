@@ -6,15 +6,20 @@ from unittest import mock
 from requests import Response
 from slack_api import SlackApi, exception
 import types
+
+
 class SlackApiTestCase(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self.time_stamp = "1401383885.000061"
         with open(os.path.join(os.getcwd(), 'config.json')) as config_file:
             config_json = json.load(config_file)
-            self.api = SlackApi(config_json)
+            self.api = SlackApi()
             self.channel_id = config_json['channel_id']
             self.token = config_json['token']
+            os.environ['slack_token'] = self.token
+            os.environ['slack_channel_id'] = self.channel_id
+
         self.params = {'token': self.token,
                        'channel': self.channel_id,
                        'count': 1000,
@@ -81,7 +86,7 @@ class SlackApiTestCase(unittest.TestCase):
         self.response_dict = {"fail": self.fail_response, "delete": self.delete_response, "history": history_responses}
 
     def set_mock_response(self, testClassName, mock):
-        def set_http_responce(url, data, header={}):
+        def set_http_responce(url, data={}, params={}, headers={}):
             # HTTPレスポンスのMockを作成する。
             res = Response()
             res.headers = {'Content-Type': 'application/json'}
@@ -118,7 +123,7 @@ class DeleteTestCase(SlackApiTestCase):
 
 class HistoryTestCase(SlackApiTestCase):
     testClassName = "history"
-    url = "channels.history"
+    url = "conversations.history"
 
     @mock.patch("requests.get")
     def test_SlackAPIを呼び出せる(self, mock_post):
