@@ -9,12 +9,8 @@ from typing import List, Dict
 from slack_api import SlackApi
 from slack_api.exception import SlackApiError
 
-with open('config.json') as config_file:
-    config_json = json.load(config_file)
-    os.environ['slack_token'] = config_json['token']
-    os.environ['slack_channel_id'] = config_json['channel_id']
-    api = SlackApi()
-    TIMELIMIT = float(config_json.get('time_limit', 12)) * 3600
+api = SlackApi(os.environ['slack_token'], os.environ.get('slack_channel_id'))
+TIMELIMIT = float(os.environ.get('time_limit', 12)) * 3600
 
 
 def filter_message(message: Dict[str, str]):
