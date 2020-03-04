@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 
 class SlackApi():
 
-    def __init__(self):
+    def __init__(self, token, channel_id=''):
         '''
         tokenとchannelのIDを受け取る
 
@@ -19,8 +19,8 @@ class SlackApi():
                 channel_id:[channel_id]
             }
         '''
-        self.token = os.environ.get('slack_token')
-        self.channel_id = os.environ.get('slack_channel_id')
+        self.token = token
+        self.channel_id = channel_id
 
     def say(self, message: str, channel_id: str = ''):
         '''

@@ -1,4 +1,4 @@
-import json
+
 import time
 import traceback
 import os
@@ -9,12 +9,8 @@ from typing import List, Dict
 from slack_api import SlackApi
 from slack_api.exception import SlackApiError
 
-with open('config.json') as config_file:
-    config_json = json.load(config_file)
-    os.environ['slack_token'] = config_json['token']
-    os.environ['slack_channel_id'] = config_json['channel_id']
-    api = SlackApi()
-    TIMELIMIT = float(config_json.get('time_limit', 12)) * 3600
+api = SlackApi(os.environ['slack_token'], os.environ.get('slack_channel_id'))
+TIMELIMIT = float(os.environ.get('time_limit', 12)) * 3600
 
 
 def filter_message(message: Dict[str, str]):
@@ -32,7 +28,11 @@ def select_delete_message(messages: List[Dict[str, str]]) -> List[str]:
         print(f"{m['ts']}: {delta}: {is_remove}")
         if is_remove:
             delete_target.append(m['ts'])
-        [ts for ts in m].extend(delete_target) if 'replies' in m else []
+            temp = []
+            if 'replies' in m:
+                for reply in m['replies']:
+                    temp.append(reply['ts'])
+                delete_target.extend(temp)
 
     return delete_target
 
@@ -63,7 +63,6 @@ def clean(time_stamps: List[str]) -> int:
 def main():
     # 発言内容と発言者の情報を削る（プライバシーの保護のため)
     messages = api.history()
-    print(messages)
     _messages = [m for m in map(filter_message, messages)]
     print(f'{len(_messages)}件のメッセージを取得しました')
     pprint(_messages)
@@ -71,7 +70,7 @@ def main():
     print(f'削除対象のメッセージが、{len(delete_target)}件ありました')
     pprint(delete_target)
     deleted_num = clean(delete_target)
-    print(f'{len(_messages)}件中{deleted_num}件のメッセージを削除しました')
+    print(f'{len(delete_target)}件中{deleted_num}件のメッセージを削除しました')
 
 
 if __name__ == "__main__":

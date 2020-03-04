@@ -14,11 +14,9 @@ class SlackApiTestCase(unittest.TestCase):
         self.time_stamp = "1401383885.000061"
         with open(os.path.join(os.getcwd(), 'config.json')) as config_file:
             config_json = json.load(config_file)
-            self.api = SlackApi()
             self.channel_id = config_json['channel_id']
             self.token = config_json['token']
-            os.environ['slack_token'] = self.token
-            os.environ['slack_channel_id'] = self.channel_id
+            self.api = SlackApi(self.token, self.channel_id)
 
         self.params = {'token': self.token,
                        'channel': self.channel_id,
