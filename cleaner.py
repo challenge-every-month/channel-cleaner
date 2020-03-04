@@ -1,4 +1,4 @@
-import json
+
 import time
 import traceback
 import os
@@ -28,7 +28,11 @@ def select_delete_message(messages: List[Dict[str, str]]) -> List[str]:
         print(f"{m['ts']}: {delta}: {is_remove}")
         if is_remove:
             delete_target.append(m['ts'])
-        [ts for ts in m].extend(delete_target) if 'replies' in m else []
+            temp = []
+            if 'replies' in m:
+                for reply in m['replies']:
+                    temp.append(reply['ts'])
+                delete_target.extend(temp)
 
     return delete_target
 
@@ -59,7 +63,6 @@ def clean(time_stamps: List[str]) -> int:
 def main():
     # 発言内容と発言者の情報を削る（プライバシーの保護のため)
     messages = api.history()
-    print(messages)
     _messages = [m for m in map(filter_message, messages)]
     print(f'{len(_messages)}件のメッセージを取得しました')
     pprint(_messages)
@@ -67,7 +70,7 @@ def main():
     print(f'削除対象のメッセージが、{len(delete_target)}件ありました')
     pprint(delete_target)
     deleted_num = clean(delete_target)
-    print(f'{len(_messages)}件中{deleted_num}件のメッセージを削除しました')
+    print(f'{len(delete_target)}件中{deleted_num}件のメッセージを削除しました')
 
 
 if __name__ == "__main__":
