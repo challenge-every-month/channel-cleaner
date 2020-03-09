@@ -1,3 +1,3 @@
-from . import cleaner
+import cleaner
 
 cleaner.main()
