@@ -1,3 +1,4 @@
 import cleaner
 
-cleaner.main()
+def main():
+  cleaner.main()
