@@ -1,4 +1,4 @@
 import cleaner
 
-def main():
+def main(request):
   cleaner.main()
