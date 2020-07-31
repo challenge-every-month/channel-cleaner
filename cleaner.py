@@ -60,9 +60,22 @@ def clean(time_stamps: List[str]) -> int:
     return removed
 
 
+def get_all_message():
+    '''
+    指定チャンネルの発言をスレッドも含めて、全て取得する
+    '''
+    all_message = []
+    parent_message = api.history()
+    all_message.extend(parent_message)
+    for message in parent_message:
+        if 'thread_ts' in message:
+            all_message.extend(api.replies(message['thread_ts']))
+    return all_message
+
+
 def main(dry_run: bool = False):
     # 発言内容と発言者の情報を削る（プライバシーの保護のため)
-    messages = api.history()
+    messages = get_all_message()
     _messages = [m for m in map(filter_message, messages)]
     print(f'{len(_messages)}件のメッセージを取得しました')
     pprint(_messages)
