@@ -60,7 +60,7 @@ def clean(time_stamps: List[str]) -> int:
     return removed
 
 
-def main():
+def main(dry_run: bool = False):
     # 発言内容と発言者の情報を削る（プライバシーの保護のため)
     messages = api.history()
     _messages = [m for m in map(filter_message, messages)]
@@ -69,9 +69,12 @@ def main():
     delete_target = select_delete_message(_messages)
     print(f'削除対象のメッセージが、{len(delete_target)}件ありました')
     pprint(delete_target)
-    deleted_num = clean(delete_target)
-    print(f'{len(delete_target)}件中{deleted_num}件のメッセージを削除しました')
+    if not dry_run:
+        deleted_num = clean(delete_target)
+        print(f'{len(delete_target)}件中{deleted_num}件のメッセージを削除しました')
+    else:
+        print('dry runモードにつき、削除処理は実行されません')
 
 
 if __name__ == "__main__":
-    main()
+    main(dry_run=os.environ.get('channel_cleaner_dry_run', False))
