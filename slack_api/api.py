@@ -82,6 +82,30 @@ class SlackApi():
             messages.extend([message for message in res['messages']])
         return messages
 
+    def replies(self, thread_ts: str, channel_id: str = '', limit: int = 1000):
+        '''
+        指定の発言のスレッドを取得する
+
+        Args:
+            channel_id: 取得するチャンネルを指定する。
+            thread_ts: 取得したいスレッドを指定する。
+            limit: 取得上限を設定する。
+        '''
+
+        end_point = 'conversations.replies'
+        params = {'token': self.token,
+                  'channel': channel_id if len(channel_id) > 0 else self.channel_id,
+                  'ts': thread_ts,
+                  'count': limit,
+                  }
+        res  = self._request_api(end_point, params, 'GET')
+        messages = res['messages']
+        while res['has_more']:
+            params['cursor'] = res['response_metadata']['next_cursor']
+            res  = self._request_api(end_point, params, 'GET')
+            messages.extend([message for message in res['messages']])
+        return messages
+
     def _request_api(self, end_point: str, data: Dict, method: str = 'GET'):
         url = urljoin('https://slack.com/api/', end_point)
         header = {'Content-Type': 'application/x-www-form-urlencoded'}
