@@ -57,6 +57,7 @@ def clean(time_stamps: List[str]) -> int:
             time.sleep(1)
         except SlackApiError:
             print(traceback.format_exc())
+            continue
     return removed
 
 
